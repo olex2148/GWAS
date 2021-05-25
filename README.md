@@ -62,7 +62,7 @@ al") +
  theme(plot.title = element_text(hjust = 0.5))
 ```
 
-![heterozygosityrate](Figures/heterozygosityrate.pdf)
+![heterozygosityrate](Figures/heterozygosityrate.png)
 
 The samples that are outside these lines are added to a file.
 
@@ -179,6 +179,9 @@ ggplot(data = eigenvectors, aes(x = PC2, y = PC3, col = Phenotype)) +
     labs(title = "PC2 x PC3") +
     theme(plot.title = element_text(hjust = 0.5))
 ```
+
+![pc1pc2](Figures/pc1pc2.png) ![pc2pc3](Figures/pc2pc3.png)
+
 
 ## Test For Association
 
