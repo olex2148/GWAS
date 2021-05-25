@@ -61,6 +61,9 @@ al") +
  labs(title = "Heterozygosity rate versus proportion of missing SNPs") +
  theme(plot.title = element_text(hjust = 0.5))
 ```
+
+![heterozygosityrate](Figures/heterozygosityrate.pdf)
+
 The samples that are ourside these lines are added to a file.
 
 ```r
