@@ -20,7 +20,7 @@ phenotype = new.levels[factor(nonbinary$V2)]
 write.table(data.frame(FID, IID, phenotype), file = 'binary_phenotype.txt', col.names = T, row.names = F, quote = F)
 ```
 
-## QC 
+## Quality Control
 #### Missing data
 
 Testing for missing data
@@ -127,7 +127,7 @@ plink --allow-no-sex --bfile eye_color_het_ibd --exclude fail-diffmiss-qc.txt --
 ```
 This leaves 783902 variants.
 
-### PCA
+### Principal Component Analysis
 
 Pruning the data for PCA
 
@@ -177,7 +177,7 @@ ggplot(data = eigenvectors, aes(x = PC2, y = PC3, col = Phenotype)) +
     theme(plot.title = element_text(hjust = 0.5))
 ```
 
-## Test for association
+## Test For Association
 
 Fisher's exact test
 
@@ -248,7 +248,7 @@ cov_30$lambda
 
 Including 10 PCs seemed best as lambda was closest to 1 for the different PCs tested. 5, 15, 40 were also not better than 10.
 
-## Most significant SNP, 30 kb around it
+## Most Significant SNP, 30 kb around it
 
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype_brown.txt --recode A --snp rs1129038 --window 30 --out eye_color_het_ibd_var_brown
@@ -279,7 +279,7 @@ n <- ggplot(snp2, aes(x = pheno, fill = pheno)) +
 grid.arrange(l, m, n, ncol=3, top = "Distribution of each genotype")
 ```
 
-## Epistasis test
+## Epistasis Analysis
 
 Doing an exhaustive epistasis test with the faster --fast-epistasis command.
 
