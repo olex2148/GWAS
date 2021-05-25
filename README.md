@@ -85,11 +85,13 @@ plink --allow-no-sex --bfile eye_color --remove wrong_het_missing_values.txt --p
 The remaining individuals in the sample are then analysed for relatedness, which is done by first
 using the plink option –indep-pairwise. This creates a prune.in file, which is used to compute the IBD
 matrix
+
 ```bash
 plink --allow-no-sex --bfile eye_color_het --indep-pairwise 500kb 5 0.2 --out eye_color_het
 plink --allow-no-sex --bfile eye_color_het --extract eye_color_het.prune.in --genome --min 0.185 --out eye_color_het
 ```
 To remove the individuals with an IBD larger than 0.185, a .txt file is created in R.
+
 ```r
 ibd = read.table('eye_color_het.genome', header = TRUE)
 members = ibd[,1]
@@ -97,6 +99,7 @@ members = unique(members)
 write.table(cbind(members,members), file = 'wrong_ibd.txt', col.names = F, row.names = F)
 ```
 The individuals listed in wrong_ibd.txt are then removed using plink.
+
 ```bash
 plink --allow-no-sex --bfile eye_color_het --remove wrong_ibd.txt --make-bed --out eye_color_het_ibd
 ```
@@ -105,13 +108,17 @@ plink --allow-no-sex --bfile eye_color_het --remove wrong_ibd.txt --make-bed --o
 #### Variant filtering
 
 Recomputing the missing data for each variant.
+
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd --missing --out eye_color_het_ibd
 ```
+
 With the phenotype file, the Fisher’s exact test is performed on the case/control missing call counts
+
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd --pheno binary_phenotype.txt --test-missing --out eye_color_het_ibd
 ```
+
 ```r
 test_missing = read.table('eye_color_het_ibd.missing', header = TRUE)
 fail_diffmiss_qc = test_missing[test_missing$P < 10e-5, 2]
@@ -130,7 +137,9 @@ This leaves 783902 variants.
 ```r
 snpgdsBED2GDS("eye_color_het_ibd_var.bed","eye_color_het_ibd_var.fam","eye_color_het_ibd_var.bim", "eye_color.gds")
 ```
+
 Pruning the data for PCA
+
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd_var --indep-pairwise 500kb 5 0.2 --out eye_color_het_ibd_var
 plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype.txt --extract eye_color_het_ibd_var.prune.in --pca 50 --out eye_color_het_ibd_var
@@ -273,9 +282,11 @@ grid.arrange(l, m, n, ncol=3, top = "Distribution of each genotype")
 
 # Epistasis test
 
+Doing an exhaustive epistasis test with the faster --fast-epistasis command.
+
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd_var --fast-epistasis --out eye_color_brown
 ```
 
-Heatmap corrected
+
 
