@@ -259,7 +259,9 @@ cov_30 <- gcontrol2(only_snp_30$P, col="black", main = "QQ plot")
 cov_30$lambda # 1.02352992251882
 ```
 
-Including 10 PCs seemed best as lambda was closest to 1 for the different PCs tested. 5, 15, 40 were also not better than 10.
+![cov10manhattan](Figures/covmanhattan.png) ![cov10qq](Figures/covqq.png)
+
+These are the plots for 10 PCs since this seemed best as lambda was closest to 1 for the different PCs tested. 5, 15, 40 were also not better than 10.
 
 ## Most Significant SNP, 30 kb around it
 
@@ -291,6 +293,7 @@ n <- ggplot(snp2, aes(x = pheno, fill = pheno)) +
 
 grid.arrange(l, m, n, ncol=3, top = "Distribution of each genotype")
 ```
+![genodist](Figures/genotypedistribution.png)
 
 ## Epistasis Analysis
 
