@@ -287,6 +287,69 @@ Doing an exhaustive epistasis test with the faster --fast-epistasis command.
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd_var --fast-epistasis --out eye_color_brown
 ```
+Calculating the distance between each test pair and plotting the result.
 
+```r
+f <- read.table("eye_color_brown.epi.cc", header = T)
 
+snp1 <- log_regres_10[match(f$SNP1, log_regres_10$SNP),]$BP
+snp2 <- log_regres_10[match(f$SNP2, log_regres_10$SNP),]$BP
+f$BP1 <- snp1
+f$BP2 <- snp2
+bonf <- 0.001/length(f$P)
+f$Distance <- abs(snp2-snp1)
 
+ggplot(f) +
+    geom_point(aes(x = Distance, y = P, col=P < bonf)) +
+    scale_color_manual(breaks = c("P > α", "P < α"), values = c('black', 'darkseagreen3'))
+
+```
+
+Finding the 100 SNP pairs with the smallest p-values.
+
+```r
+df <- f %>% 
+    arrange(P) %>%
+    top_n(-100) %>% 
+    select(SNP1, SNP2)
+```
+
+Making a file for another epistasis test.
+```r
+write.table(df, "epi_x.set", append = FALSE, sep = " ", dec = ".", row.names = FALSE, col.names = FALSE)
+```
+Running the more precise --epistasis test on these 100 pairs
+
+```bash
+plink --allow-no-sex --bfile eye_color_het_ibd_var --epistasis --set-test --set epi.set --out eye_color_top100
+```
+```r
+top100 <- read.table("eye_color_top100.epi.cc", header = T)
+
+snp1 <- log_regres_10[match(top100$SNP1, log_regres_10$SNP),]$BP
+snp2 <- log_regres_10[match(top100$SNP2, log_regres_10$SNP),]$BP
+top100$BP1 <- snp1
+top100$BP2 <- snp2
+bonf <- 0.001/length(top100$P)
+top100$Distance <- abs(snp2-snp1)
+
+ggplot(top100) +
+    geom_point(aes(x = Distance, y = P, col=P < bonf)) +
+    scale_color_manual(breaks = c("P > α", "P < α"), values = c('black', 'darkseagreen3'))
+   
+```
+```r
+ggplot(top100, aes(x = SNP1, y = SNP2, fill = P)) +
+    geom_tile()
+```
+
+Grouping the chromosomes together, calculating the mean p-value and plotting the result.
+```r
+top100_chr <- top100 %>%
+    group_by(CHR1, CHR2) %>% 
+    summarise(chr_mean = mean(P))
+
+ggplot(top100_chr, aes(x = CHR1, y = CHR2, fill = chr_mean)) +
+    geom_tile() +
+    labs(fill='Mean p-value')
+```
