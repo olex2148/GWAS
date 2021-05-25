@@ -265,6 +265,8 @@ These are the plots for 10 PCs since this seemed best as lambda was closest to 1
 
 ## Most Significant SNP, 30 kb around it
 
+Here, the most significant SNP was found to be SNP rs1129038 (see manhattan plot).
+
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype.txt --recode A --snp rs1129038 --window 30 --out eye_color_het_ibd_var_brown
 ```
