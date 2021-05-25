@@ -204,7 +204,7 @@ r <- gcontrol2(association_test$P, col="black")
 Using the inflation factor lambda to correct the p-values.
 
 ```r
-(inflationfactor <- r$lambda)
+inflationfactor <- r$lambda # 
 
 association_test$GC  <- association_test$P/inflationfactor
 
@@ -230,7 +230,7 @@ manhattan(only_snp_20, suggestiveline = FALSE, main = "Manhattan Plot", genomewi
 
 cov_20 <- gcontrol2(only_snp_20$P, col="black", main = "QQ plot")
 
-cov_20$lambda
+cov_20$lambda # 1.01642984555232
 
 log_regres_10 <- read.table("eye_color_het_ibd_var_brown_10.assoc.logistic", header = T)
 only_snp_10 <- na.omit(subset(log_regres_10, TEST=="ADD"))
@@ -238,7 +238,7 @@ manhattan(only_snp_10, suggestiveline = FALSE, main = "Manhattan Plot", genomewi
 
 cov_10 <- gcontrol2(only_snp_10$P, col="black", main = "QQ plot")
 
-cov_10$lambda
+cov_10$lambda # 
 
 log_regres_30 <- read.table("eye_color_het_ibd_var_brown_30.assoc.logistic", header = T)
 only_snp_30 <- na.omit(subset(log_regres_30, TEST=="ADD"))
@@ -246,7 +246,7 @@ manhattan(only_snp_30, suggestiveline = FALSE, main = "Manhattan Plot", genomewi
 
 cov_30 <- gcontrol2(only_snp_30$P, col="black", main = "QQ plot")
 
-cov_30$lambda
+cov_30$lambda # 
 ```
 
 Including 10 PCs seemed best as lambda was closest to 1 for the different PCs tested. 5, 15, 40 were also not better than 10.
@@ -318,7 +318,7 @@ df <- f %>%
 
 Making a file for another epistasis test.
 ```r
-write.table(df, "epi_x.set", append = FALSE, sep = " ", dec = ".", row.names = FALSE, col.names = FALSE)
+write.table(df, "epi.set", append = FALSE, sep = " ", dec = ".", row.names = FALSE, col.names = FALSE)
 ```
 Running the more precise --epistasis test on these 100 pairs
 
