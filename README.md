@@ -248,7 +248,7 @@ manhattan(only_snp_10, suggestiveline = FALSE, main = "Manhattan Plot", genomewi
 
 cov_10 <- gcontrol2(only_snp_10$P, col="black", main = "QQ plot")
 
-cov_10$lambda # 
+cov_10$lambda # 1.00842669895273
 
 log_regres_30 <- read.table("eye_color_het_ibd_var_brown_30.assoc.logistic", header = T)
 only_snp_30 <- na.omit(subset(log_regres_30, TEST=="ADD"))
@@ -256,7 +256,7 @@ manhattan(only_snp_30, suggestiveline = FALSE, main = "Manhattan Plot", genomewi
 
 cov_30 <- gcontrol2(only_snp_30$P, col="black", main = "QQ plot")
 
-cov_30$lambda # 
+cov_30$lambda # 1.02352992251882
 ```
 
 Including 10 PCs seemed best as lambda was closest to 1 for the different PCs tested. 5, 15, 40 were also not better than 10.
