@@ -17,7 +17,7 @@ new.levels = c(2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2)
 FID = fam$V1
 IID = nonbinary[,1]
 phenotype = new.levels[factor(nonbinary$V2)]
-write.table(data.frame(FID, IID, phenotype), file = 'binary_phenotype_brown.txt', col.names = T, row.names = F, quote = F)
+write.table(data.frame(FID, IID, phenotype), file = 'binary_phenotype.txt', col.names = T, row.names = F, quote = F)
 ```
 
 ## QC 
@@ -76,7 +76,7 @@ write.table(outlier_ind[,c(1,2)], 'wrong_het_missing_values.txt', col.names = FA
 This is then removed from the sample using plink
 
 ```bash
-plink --allow-no-sex --bfile eye_color --remove wrong_het_missing_values.txt --pheno binary_phenotype_brown.txt --make-bed --out eye_color_het
+plink --allow-no-sex --bfile eye_color --remove wrong_het_missing_values.txt --pheno binary_phenotype.txt --make-bed --out eye_color_het
 ```
 13 individuals were filtered out by doing this leaving us with 1274.
 
@@ -110,7 +110,7 @@ plink --allow-no-sex --bfile eye_color_het_ibd --missing --out eye_color_het_ibd
 ```
 With the phenotype file, the Fisher’s exact test is performed on the case/control missing call counts
 ```bash
-plink --allow-no-sex --bfile eye_color_het_ibd --pheno binary_phenotype_brown.txt --test-missing --out eye_color_het_ibd
+plink --allow-no-sex --bfile eye_color_het_ibd --pheno binary_phenotype.txt --test-missing --out eye_color_het_ibd
 ```
 ```r
 test_missing = read.table('eye_color_het_ibd.missing', header = TRUE)
@@ -122,7 +122,7 @@ These variants are then filtered out along with any other that has a missing gen
 0.05, deviates from Hardy-Weinberg equilibrium or has a minor allele frequency of less than 0.01.
 
 ```bash
-plink --allow-no-sex --bfile eye_color_het_ibd --exclude fail-diffmiss-qc.txt --pheno binary_phenotype_brown.txt --geno 0.5 --hwe 0.00001 --maf 0.01 --make-bed --out eye_color_het_ibd_var
+plink --allow-no-sex --bfile eye_color_het_ibd --exclude fail-diffmiss-qc.txt --pheno binary_phenotype.txt --geno 0.5 --hwe 0.00001 --maf 0.01 --make-bed --out eye_color_het_ibd_var
 ```
 This leaves 783902 variants.
 
@@ -133,7 +133,7 @@ snpgdsBED2GDS("eye_color_het_ibd_var.bed","eye_color_het_ibd_var.fam","eye_color
 Pruning the data for PCA
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd_var --indep-pairwise 500kb 5 0.2 --out eye_color_het_ibd_var
-plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype_brown.txt --extract eye_color_het_ibd_var.prune.in --pca 50 --out eye_color_het_ibd_var
+plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype.txt --extract eye_color_het_ibd_var.prune.in --pca 50 --out eye_color_het_ibd_var
 ```
 
 ```r
@@ -178,7 +178,7 @@ ggplot(data = eigenvectors, aes(x = PC2, y = PC3, col = Phenotype)) +
 Fisher's exact test
 
 ```bash
-plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype_brown.txt --fisher --out eye_color_het_ibd_var_brown
+plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype.txt --fisher --out eye_color_het_ibd_var_brown
 ```
 
 p values plotted in Manhattan and QQ plot with Bonferroni corrected significance level
