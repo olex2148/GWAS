@@ -361,7 +361,7 @@ ggplot(top100, aes(x = SNP1, y = SNP2, fill = P)) +
     geom_tile()
 ```
 
-![100heatmap](Figures/.png)
+![100heatmap](Figures/100epistasi_heatmap.png)
 
 
 Grouping the chromosomes together, calculating the mean p-value and plotting the result.
