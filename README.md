@@ -39,7 +39,7 @@ plink --allow-no-sex --bfile eye_color --het --out eye_color
 
 The .het output contains the observed number of homozygous genotypes as well as the number of non-missing genotypes per individual, which can be used to calculate the heterozygosity rate per individual - which is given by this formula:
 
-𝑜𝑏𝑠_{ℎ𝑒𝑡} = \frac{𝑁(𝑁𝑀) − 𝑂(𝐻𝑜𝑚)}{𝑁(𝑁𝑀)}
+<img src="https://latex.codecogs.com/svg.latex?\large&space;obs_{het}&space;=&space;\frac{N(NM)-O(hom)}{N(NM)}" title="\large obs_{het} = \frac{N(NM)-O(hom)}{N(NM)}" />
 
 Plotting this value with the proportion of SNPs per individual and two red lines are added that mark the borders of the 3 standard deviations from the mean (our cut-off).
 
