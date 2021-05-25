@@ -199,11 +199,16 @@ corrected_level <- 0.05/length(association_test$SNP)
 manhattan(association_test, suggestiveline = FALSE, main = "Manhattan Plot", genomewideline = -log10(corrected_level), annotatePval = corrected_level)
 ```
 
+![uncorrectedmanhattan](Figures/uncorrectedmanhattan.png)
+
 #### Genomic control
 
 ```r
 r <- gcontrol2(association_test$P, col="black")
 ```
+
+![uncorrectedqq](Figures/uncorrectedqq.png)
+
 Using the inflation factor lambda to correct the p-values.
 
 ```r
@@ -215,6 +220,8 @@ gcontrol2(association_test$GC, col="black", main = "Corrected QQ plot")
 
 manhattan(association_test, p = "GC", suggestiveline = FALSE, main = "Manhattan Plot with genomic control", genomewideline = -log10(corrected_level), annotatePval = corrected_level)
 ```
+
+![gcmanhattan](Figures/gcmanhattan.png) ![gcqq](Figures/gcqq.png)
 
 #### PC adjusting
 
