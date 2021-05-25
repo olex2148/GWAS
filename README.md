@@ -358,7 +358,9 @@ ggplot(top100) +
 
 ```r
 ggplot(top100, aes(x = SNP1, y = SNP2, fill = P)) +
-    geom_tile()
+    geom_tile()  +
+    theme(axis.text=element_text(size=4),
+          axis.text.x = element_text(angle = 90))
 ```
 
 ![100heatmap](Figures/100epistasi_heatmap.png)
