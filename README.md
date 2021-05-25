@@ -64,7 +64,7 @@ al") +
 
 ![heterozygosityrate](Figures/heterozygosityrate.pdf)
 
-The samples that are ourside these lines are added to a file.
+The samples that are outside these lines are added to a file.
 
 ```r
 right = mean_het + 3*sd(het$obs_het)
@@ -218,7 +218,7 @@ manhattan(association_test, p = "GC", suggestiveline = FALSE, main = "Manhattan 
 First done for the first 20 PCs, but several were tested.
 
 ```bash
-plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype_brown.txt --logistic --covar eye_color_het_ibd_var.eigenvec --covar-number 1-20 --out eye_color_het_ibd_var_brown_20
+plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype.txt --logistic --covar eye_color_het_ibd_var.eigenvec --covar-number 1-20 --out eye_color_het_ibd_var_brown_20
 ```
 
 QQplot and Manhattanplot
@@ -254,7 +254,7 @@ Including 10 PCs seemed best as lambda was closest to 1 for the different PCs te
 ## Most Significant SNP, 30 kb around it
 
 ```bash
-plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype_brown.txt --recode A --snp rs1129038 --window 30 --out eye_color_het_ibd_var_brown
+plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype.txt --recode A --snp rs1129038 --window 30 --out eye_color_het_ibd_var_brown
 ```
 
 Genotype distributions
