@@ -4,12 +4,12 @@ GWAS of eye color
 ```r
 library(dplyr)
 library(ggplot2)
-library(gap)
 library(qqman)
 library(SNPRelate)
-library(wtest)
 library(gridExtra)
 ```
+Making a binary phenotype file (brown vs other).
+
 ```r
 nonbinary = read.table('eye_color.txt', header = F)
 fam = read.table('eye_color.fam')
