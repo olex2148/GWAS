@@ -354,7 +354,7 @@ ggplot(top100) +
     scale_color_manual(values = c('black', 'darkseagreen3'))
    
 ```
-![allepistasiscatter](Figures/100epistasi_scatter.png)
+![allepistasiscatter](Figures/100epistasi_scatterlog.png)
 
 ```r
 ggplot(top100, aes(x = SNP1, y = SNP2, fill = P)) +
