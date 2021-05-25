@@ -315,10 +315,11 @@ bonf <- 0.001/length(f$P)
 f$Distance <- abs(snp2-snp1)
 
 ggplot(f) +
-    geom_point(aes(x = Distance, y = P, col=P < bonf)) +
-    scale_color_manual(breaks = c("P > α", "P < α"), values = c('black', 'darkseagreen3'))
+    geom_point(aes(x = Distance, y = -log(P), col=P < bonf)) +
+    scale_color_manual(values = c('black', 'darkseagreen3'))
 
 ```
+![allepistasiscatter](Figures/allepistasi_logscatter.png)
 
 Finding the 100 SNP pairs with the smallest p-values.
 
@@ -349,14 +350,19 @@ bonf <- 0.001/length(top100$P)
 top100$Distance <- abs(snp2-snp1)
 
 ggplot(top100) +
-    geom_point(aes(x = Distance, y = P, col=P < bonf)) +
-    scale_color_manual(breaks = c("P > α", "P < α"), values = c('black', 'darkseagreen3'))
+    geom_point(aes(x = Distance, y = -log(P), col=P < bonf)) +
+    scale_color_manual(values = c('black', 'darkseagreen3'))
    
 ```
+![allepistasiscatter](Figures/100epistasi_scatter.png)
+
 ```r
 ggplot(top100, aes(x = SNP1, y = SNP2, fill = P)) +
     geom_tile()
 ```
+
+![100heatmap](Figures/.png)
+
 
 Grouping the chromosomes together, calculating the mean p-value and plotting the result.
 ```r
@@ -368,3 +374,5 @@ ggplot(top100_chr, aes(x = CHR1, y = CHR2, fill = chr_mean)) +
     geom_tile() +
     labs(fill='Mean p-value')
 ```
+
+![chrheatmap](Figures/100epistasi_chrheatmap.png)
