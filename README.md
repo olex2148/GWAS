@@ -37,11 +37,11 @@ To analyse the heterozygosity of the sample --het is used
 plink --allow-no-sex --bfile eye_color --het --out eye_color
 ```
 
-The resulting .het file contains the observed number of homozygous genotypes as well as the number of non-missing genotypes per individual. With these values the observed heterozygosity rate per individual can be calculated using the this formula:
+The .het output contains the observed number of homozygous genotypes as well as the number of non-missing genotypes per individual, which can be used to calculate the heterozygosity rate per individual - which is given by this formula:
 
 𝑜𝑏𝑠_{ℎ𝑒𝑡} = \frac{𝑁(𝑁𝑀) − 𝑂(𝐻𝑜𝑚)}{𝑁(𝑁𝑀)}
 
-This is calculated in R and plotted with the proportion of missing SNPs per individuals (F_MISS in .imiss) as a function of the observed heterozygosity rate per individual.
+Plotting this value with the proportion of SNPs per individual and two red lines are added that mark the borders of the 3 standard deviations from the mean (our cut-off).
 
 ```r
 imiss = read.table('eye_color.imiss', header = T, sep="")
@@ -61,36 +61,32 @@ al") +
  labs(title = "Heterozygosity rate versus proportion of missing SNPs") +
  theme(plot.title = element_text(hjust = 0.5))
 ```
-
-The vertical lines indicate heterozygosity rates 3 standard deviations above and below the mean.
-To filter out samples that are outside these lines, a file containing the FID and IID of these individuals is generated.
+The samples that are ourside these lines are added to a file.
 
 ```r
-right_tail = mean_het + 3*sd(het$obs_het)
-left_tail = mean_het - 3*sd(het$obs_het)
+right = mean_het + 3*sd(het$obs_het)
+left = mean_het - 3*sd(het$obs_het)
 filtering = cbind(imiss, het)
-outlier_ind = subset(filtering, filtering$obs_het > right_tail | filtering$obs_het < left_tail)
-write.table(outlier_ind[,c(1,2)], 'wrong_het_missing_values.txt', col.names = FALSE, row.names = FALSE)
+outlier_ind = subset(filtering, filtering$obs_het > right | filtering$obs_het < left)
+write.table(outlier_ind[,c(1,2)], 'missing_values.txt', col.names = FALSE, row.names = FALSE)
 ```
 
-This is then removed from the sample using plink
+And then they are filtered out.
 
 ```bash
 plink --allow-no-sex --bfile eye_color --remove wrong_het_missing_values.txt --pheno binary_phenotype.txt --make-bed --out eye_color_het
 ```
-13 individuals were filtered out by doing this leaving us with 1274.
+13 individuals were filtered out and 1274 were left.
 
 #### Relatedness
 
-The remaining individuals in the sample are then analysed for relatedness, which is done by first
-using the plink option –indep-pairwise. This creates a prune.in file, which is used to compute the IBD
-matrix
+Using an IBD matrix any related individuals are now filtered away. 
 
 ```bash
 plink --allow-no-sex --bfile eye_color_het --indep-pairwise 500kb 5 0.2 --out eye_color_het
 plink --allow-no-sex --bfile eye_color_het --extract eye_color_het.prune.in --genome --min 0.185 --out eye_color_het
 ```
-To remove the individuals with an IBD larger than 0.185, a .txt file is created in R.
+Any individual with an IBD larger than 0.185 is removed.
 
 ```r
 ibd = read.table('eye_color_het.genome', header = TRUE)
@@ -98,7 +94,6 @@ members = ibd[,1]
 members = unique(members)
 write.table(cbind(members,members), file = 'wrong_ibd.txt', col.names = F, row.names = F)
 ```
-The individuals listed in wrong_ibd.txt are then removed using plink.
 
 ```bash
 plink --allow-no-sex --bfile eye_color_het --remove wrong_ibd.txt --make-bed --out eye_color_het_ibd
@@ -113,7 +108,7 @@ Recomputing the missing data for each variant.
 plink --allow-no-sex --bfile eye_color_het_ibd --missing --out eye_color_het_ibd
 ```
 
-With the phenotype file, the Fisher’s exact test is performed on the case/control missing call counts
+With the phenotype file, the Fisher’s exact test is performed.
 
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd --pheno binary_phenotype.txt --test-missing --out eye_color_het_ibd
@@ -125,8 +120,7 @@ fail_diffmiss_qc = test_missing[test_missing$P < 10e-5, 2]
 write.table(fail_diffmiss_qc, file = 'fail-diffmiss-qc.txt', row.names = F, col.names = F)
 ```
 
-These variants are then filtered out along with any other that has a missing genotype rate larger than
-0.05, deviates from Hardy-Weinberg equilibrium or has a minor allele frequency of less than 0.01.
+These variants are then filtered out. Furthermore, any variant with a missing genotype rate larger than 0.5, a too large deviation from Hardy-Weinberg equilibrium or has a MAF (minor allele frequency) of less than 0.01. 
 
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd --exclude fail-diffmiss-qc.txt --pheno binary_phenotype.txt --geno 0.5 --hwe 0.00001 --maf 0.01 --make-bed --out eye_color_het_ibd_var
@@ -134,9 +128,6 @@ plink --allow-no-sex --bfile eye_color_het_ibd --exclude fail-diffmiss-qc.txt --
 This leaves 783902 variants.
 
 ### PCA
-```r
-snpgdsBED2GDS("eye_color_het_ibd_var.bed","eye_color_het_ibd_var.fam","eye_color_het_ibd_var.bim", "eye_color.gds")
-```
 
 Pruning the data for PCA
 
@@ -145,7 +136,11 @@ plink --allow-no-sex --bfile eye_color_het_ibd_var --indep-pairwise 500kb 5 0.2 
 plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype.txt --extract eye_color_het_ibd_var.prune.in --pca 50 --out eye_color_het_ibd_var
 ```
 
+Using SNPRelate to perform PCA on the pruned data.
+
 ```r
+snpgdsBED2GDS("eye_color_het_ibd_var.bed","eye_color_het_ibd_var.fam","eye_color_het_ibd_var.bim", "eye_color.gds")
+
 n_pcs <- min(1260, 783902)
 
 genofile <- snpgdsOpen("eye_color.gds",  FALSE, TRUE, TRUE)
@@ -190,15 +185,20 @@ Fisher's exact test
 plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype.txt --fisher --out eye_color_het_ibd_var_brown
 ```
 
-p values plotted in Manhattan and QQ plot with Bonferroni corrected significance level
+P-values plotted in Manhattan and QQ plot with Bonferroni corrected significance level.
 
 ```r
 association_test = read.table("eye_color_het_ibd_var_brown.assoc.fisher", header = T)
 corrected_level <- 0.05/length(association_test$SNP)
 manhattan(association_test, suggestiveline = FALSE, main = "Manhattan Plot", genomewideline = -log10(corrected_level), annotatePval = corrected_level)
+```
 
+#### Genomic control
+
+```r
 r <- gcontrol2(association_test$P, col="black")
 ```
+Using the inflation factor lambda to correct the p-values.
 
 ```r
 (inflationfactor <- r$lambda)
@@ -207,13 +207,12 @@ association_test$GC  <- association_test$P/inflationfactor
 
 gcontrol2(association_test$GC, col="black", main = "Corrected QQ plot")
 
-manhattan(association_test, p = "GC", suggestiveline = FALSE, main = "Manhattan Plot with genomic contr
-ol", genomewideline = -log10(corrected_level), annotatePval = corrected_level)
+manhattan(association_test, p = "GC", suggestiveline = FALSE, main = "Manhattan Plot with genomic control", genomewideline = -log10(corrected_level), annotatePval = corrected_level)
 ```
 
 #### PC adjusting
 
-First 20
+First done for the first 20 PCs, but several were tested.
 
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype_brown.txt --logistic --covar eye_color_het_ibd_var.eigenvec --covar-number 1-20 --out eye_color_het_ibd_var_brown_20
@@ -249,7 +248,7 @@ cov_30$lambda
 
 Including 10 PCs seemed best as lambda was closest to 1 for the different PCs tested. 5, 15, 40 were also not better than 10.
 
-Most significant SNP, 30 kb around it
+## Most significant SNP, 30 kb around it
 
 ```bash
 plink --allow-no-sex --bfile eye_color_het_ibd_var --pheno binary_phenotype_brown.txt --recode A --snp rs1129038 --window 30 --out eye_color_het_ibd_var_brown
@@ -280,7 +279,7 @@ n <- ggplot(snp2, aes(x = pheno, fill = pheno)) +
 grid.arrange(l, m, n, ncol=3, top = "Distribution of each genotype")
 ```
 
-# Epistasis test
+## Epistasis test
 
 Doing an exhaustive epistasis test with the faster --fast-epistasis command.
 
